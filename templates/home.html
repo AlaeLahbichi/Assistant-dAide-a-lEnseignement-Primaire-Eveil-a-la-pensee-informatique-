@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EduMagie – Assistant d'Aide à l'Enseignement Primaire</title>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #FF6B6B;
+      --secondary: #4ECDC4;
+      --accent: #FFE66D;
+      --purple: #A78BFA;
+      --blue: #60A5FA;
+      --green: #6EE7B7;
+      --orange: #FDBA74;
+      --bg: #FFFDF7;
+      --card-bg: #FFFFFF;
+      --text: #2D2D2D;
+      --text-light: #6B7280;
+      --radius: 20px;
+      --shadow: 0 8px 30px rgba(0,0,0,0.08);
+      --nav-h: 72px;
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ─── NAVBAR ─── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: var(--nav-h);
+      background: #fff;
+      border-bottom: 2px solid #F0EEE8;
+      display: flex;
+      align-items: center;
+      padding: 0 2rem;
+      gap: 2rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      font-family: 'Baloo 2', cursive;
+      font-weight: 800;
+      font-size: 1.5rem;
+      color: var(--primary);
+      white-space: nowrap;
+    }
+
+    .nav-logo .logo-icon {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, var(--primary), #FF9966);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      flex: 1;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--text-light);
+      padding: 8px 14px;
+      border-radius: 12px;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .nav-links a:hover { background: #FFF3F3; color: var(--primary); }
+    .nav-links a.active { background: #FFF3F3; color: var(--primary); }
+
+    .nav-right {
+      margin-left: auto;
+      position: relative;
+    }
+
+    .user-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      overflow: hidden;
+      cursor: pointer;
+      border: 3px solid var(--accent);
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: block;
+    }
+
+    .user-avatar:hover { transform: scale(1.08); box-shadow: 0 4px 14px rgba(0,0,0,0.15); }
+    .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    .user-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 12px);
+      right: 0;
+      width: 240px;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.14);
+      border: 1.5px solid #F0EEE8;
+      overflow: hidden;
+      animation: dropIn 0.2s ease;
+      z-index: 200;
+    }
+
+    .user-dropdown.open { display: block; }
+
+    @keyframes dropIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .dropdown-header {
+      padding: 1.1rem 1.25rem 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid #F0EEE8;
+    }
+
+    .dropdown-avatar {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px solid var(--accent);
+      flex-shrink: 0;
+    }
+
+    .dropdown-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    .dropdown-info p { font-weight: 700; font-size: 0.95rem; color: var(--text); line-height: 1.2; }
+    .dropdown-info span { font-size: 0.8rem; color: var(--text-light); }
+
+    .dropdown-buttons { padding: 0.7rem; display: flex; flex-direction: column; gap: 4px; }
+
+    .dropdown-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      border-radius: 12px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text);
+      transition: background 0.15s;
+      text-align: left;
+      width: 100%;
+    }
+
+    .dropdown-btn:hover { background: #F8F6F0; }
+
+    .dropdown-btn .btn-icon { font-size: 1.1rem; width: 22px; text-align: center; }
+
+    .dropdown-btn.logout {
+      color: var(--primary);
+      border-top: 1px solid #F0EEE8;
+      margin-top: 4px;
+      border-radius: 0 0 12px 12px;
+      padding-top: 12px;
+    }
+
+    .dropdown-btn.logout:hover { background: #FFF3F3; }
+
+    /* ─── HERO ─── */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, #FFF5F5 0%, #FFF9ED 50%, #F0FFF9 100%);
+      padding: 5rem 2rem 4rem;
+      text-align: center;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(255,107,107,0.12) 0%, transparent 70%);
+      top: -200px; left: -200px;
+      pointer-events: none;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(78,205,196,0.12) 0%, transparent 70%);
+      bottom: -200px; right: -200px;
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #fff;
+      border: 2px solid var(--accent);
+      color: #B45309;
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 6px 16px;
+      border-radius: 50px;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 {
+      font-family: 'Baloo 2', cursive;
+      font-size: clamp(2.2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      line-height: 1.15;
+      color: var(--text);
+      margin-bottom: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero h1 .highlight {
+      color: var(--primary);
+      display: inline-block;
+      position: relative;
+    }
+
+    .hero h1 .highlight::after {
+      content: '';
+      position: absolute;
+      bottom: 2px; left: 0; right: 0;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 4px;
+      z-index: -1;
+      opacity: 0.6;
+    }
+
+    .hero p {
+      max-width: 620px;
+      margin: 0 auto 2.5rem;
+      font-size: 1.1rem;
+      color: var(--text-light);
+      line-height: 1.7;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-btns {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 1;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 14px 32px;
+      border-radius: 50px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 6px 20px rgba(255,107,107,0.35);
+      text-decoration: none;
+    }
+
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(255,107,107,0.45); }
+
+    .btn-secondary {
+      background: #fff;
+      color: var(--primary);
+      border: 2px solid var(--primary);
+      padding: 13px 30px;
+      border-radius: 50px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .btn-secondary:hover { background: #FFF3F3; transform: translateY(-2px); }
+
+    /* ─── MASCOTS ROW ─── */
+    .mascots-row {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin: 2.5rem auto 0;
+      max-width: 900px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .mascot-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mascot-img-wrap {
+      width: 110px; height: 110px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 4px solid #fff;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+      background: #F3F4F6;
+      transition: transform 0.3s;
+    }
+
+    .mascot-img-wrap:hover { transform: translateY(-6px) rotate(3deg); }
+    .mascot-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+    .mascot-label { font-size: 0.8rem; font-weight: 700; color: var(--text-light); }
+
+    /* ─── STATS STRIP ─── */
+    .stats-strip {
+      background: var(--primary);
+      padding: 1.8rem 2rem;
+      display: flex;
+      justify-content: center;
+      gap: 4rem;
+      flex-wrap: wrap;
+    }
+
+    .stat-item { text-align: center; color: #fff; }
+    .stat-num { font-family: 'Baloo 2', cursive; font-size: 2.2rem; font-weight: 800; line-height: 1; }
+    .stat-lbl { font-size: 0.88rem; font-weight: 600; opacity: 0.85; margin-top: 4px; }
+
+    /* ─── SECTION COMMON ─── */
+    .section { padding: 5rem 2rem; }
+    .section-tag {
+      display: inline-block;
+      background: #F0FFF9;
+      color: #059669;
+      border: 2px solid #A7F3D0;
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 5px 14px;
+      border-radius: 50px;
+      margin-bottom: 1rem;
+    }
+
+    .section-tag.pink { background: #FFF0F5; color: #DB2777; border-color: #FBCFE8; }
+    .section-tag.blue { background: #EFF6FF; color: #2563EB; border-color: #BFDBFE; }
+
+    .section-title {
+      font-family: 'Baloo 2', cursive;
+      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 0.75rem;
+    }
+
+    .section-subtitle { font-size: 1.05rem; color: var(--text-light); max-width: 580px; line-height: 1.7; }
+
+    /* ─── OBJECTIVES ─── */
+    .objectives { background: #fff; }
+    .objectives-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+      margin-top: 3rem;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .obj-card {
+      background: var(--bg);
+      border-radius: var(--radius);
+      padding: 2rem 1.75rem;
+      border: 2px solid transparent;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .obj-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      border-radius: 4px 4px 0 0;
+    }
+
+    .obj-card.red::before   { background: var(--primary); }
+    .obj-card.teal::before  { background: var(--secondary); }
+    .obj-card.yellow::before{ background: #F59E0B; }
+    .obj-card.purple::before{ background: var(--purple); }
+
+    .obj-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); border-color: #E5E7EB; }
+
+    .obj-icon {
+      font-size: 2.4rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .obj-card h3 { font-family: 'Baloo 2', cursive; font-size: 1.2rem; font-weight: 700; margin-bottom: 0.6rem; }
+    .obj-card p { font-size: 0.95rem; color: var(--text-light); line-height: 1.65; }
+
+    /* ─── ACTIVITIES ─── */
+    .activities { background: linear-gradient(180deg, #FFFDF7 0%, #FFF5F5 100%); }
+    .activities-header { max-width: 1200px; margin: 0 auto 3rem; }
+
+    .activities-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .act-card {
+      background: #fff;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      border: 2px solid #F0EEE8;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+
+    .act-card:hover { transform: translateY(-6px); box-shadow: 0 16px 40px rgba(0,0,0,0.12); }
+
+    .act-img-wrap {
+      width: 100%;
+      height: 200px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .act-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s;
+    }
+
+    .act-card:hover .act-img-wrap img { transform: scale(1.06); }
+
+    .act-badge {
+      position: absolute;
+      top: 12px; left: 12px;
+      padding: 5px 12px;
+      border-radius: 50px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .act-badge.algo    { background: var(--primary); }
+    .act-badge.logic   { background: var(--secondary); }
+    .act-badge.problem { background: var(--purple); }
+    .act-badge.seq     { background: #F59E0B; }
+    .act-badge.pattern { background: #10B981; }
+    .act-badge.creative{ background: #EC4899; }
+
+    .act-body { padding: 1.5rem; }
+
+    .act-body h3 {
+      font-family: 'Baloo 2', cursive;
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+
+    .act-body p { font-size: 0.92rem; color: var(--text-light); line-height: 1.6; margin-bottom: 1rem; }
+
+    .act-meta {
+      display: flex;
+      gap: 12px;
+      font-size: 0.8rem;
+      color: var(--text-light);
+      font-weight: 600;
+    }
+
+    .act-meta span {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: #F8F6F0;
+      padding: 4px 10px;
+      border-radius: 8px;
+    }
+
+    /* ─── HOW IT WORKS ─── */
+    .how-section { background: #fff; }
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+      max-width: 900px;
+      margin: 3rem auto 0;
+      position: relative;
+    }
+
+    .step-card {
+      text-align: center;
+      padding: 2rem 1rem;
+      border-radius: var(--radius);
+      background: var(--bg);
+      border: 2px solid #F0EEE8;
+      transition: transform 0.2s;
+    }
+
+    .step-card:hover { transform: translateY(-4px); }
+
+    .step-num {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Baloo 2', cursive;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #fff;
+      margin: 0 auto 1rem;
+    }
+
+    .step-num.s1 { background: var(--primary); }
+    .step-num.s2 { background: var(--secondary); }
+    .step-num.s3 { background: var(--purple); }
+    .step-num.s4 { background: #F59E0B; }
+
+    .step-card h3 { font-family: 'Baloo 2', cursive; font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .step-card p { font-size: 0.9rem; color: var(--text-light); line-height: 1.6; }
+
+    /* ─── CHARACTERS STRIP ─── */
+    .chars-strip {
+      background: linear-gradient(135deg, #667EEA22 0%, #764BA222 100%);
+      padding: 4rem 2rem;
+      text-align: center;
+    }
+
+    .chars-grid {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin-top: 2rem;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .char-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .char-circle {
+      width: 90px; height: 90px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 4px solid #fff;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+      background: #F3F4F6;
+      transition: transform 0.3s;
+    }
+
+    .char-circle:hover { transform: scale(1.15) rotate(-5deg); }
+    .char-circle img { width: 100%; height: 100%; object-fit: cover; }
+    .char-name { font-size: 0.8rem; font-weight: 700; color: var(--text-light); }
+
+    /* ─── CTA ─── */
+    .cta-section {
+      background: linear-gradient(135deg, var(--primary) 0%, #FF9966 100%);
+      padding: 5rem 2rem;
+      text-align: center;
+      color: #fff;
+    }
+
+    .cta-section h2 {
+      font-family: 'Baloo 2', cursive;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 800;
+      margin-bottom: 1rem;
+    }
+
+    .cta-section p { font-size: 1.1rem; opacity: 0.9; max-width: 520px; margin: 0 auto 2.5rem; line-height: 1.7; }
+
+    .btn-white {
+      background: #fff;
+      color: var(--primary);
+      border: none;
+      padding: 14px 36px;
+      border-radius: 50px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-white:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: #2D2D2D;
+      color: #fff;
+      padding: 3rem 2rem 2rem;
+    }
+
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 3rem;
+    }
+
+    .footer-brand .logo-text {
+      font-family: 'Baloo 2', cursive;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 0.75rem;
+    }
+
+    .footer-brand p { font-size: 0.9rem; color: #9CA3AF; line-height: 1.7; }
+
+    .footer-col h4 {
+      font-family: 'Baloo 2', cursive;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: #fff;
+    }
+
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .footer-col ul li a {
+      color: #9CA3AF;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+    .footer-col ul li a:hover { color: var(--accent); }
+
+    .footer-bottom {
+      max-width: 1200px;
+      margin: 2.5rem auto 0;
+      padding-top: 1.5rem;
+      border-top: 1px solid #3F3F3F;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      color: #6B7280;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-emojis { font-size: 1.2rem; letter-spacing: 4px; }
+
+    /* ─── FLOATING SHAPES ─── */
+    .float-shape {
+      position: absolute;
+      pointer-events: none;
+      animation: floaty 4s ease-in-out infinite alternate;
+    }
+
+    @keyframes floaty {
+      from { transform: translateY(0) rotate(0deg); }
+      to   { transform: translateY(-14px) rotate(6deg); }
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      nav { padding: 0 1rem; gap: 1rem; }
+      .nav-links { display: none; }
+      .footer-inner { grid-template-columns: 1fr 1fr; }
+      .stats-strip { gap: 2rem; }
+    }
+
+    @media (max-width: 480px) {
+      .footer-inner { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════ NAVBAR ══════════════ -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="logo-icon">🌟</div>
+    EduMagie
+  </a>
+
+  <ul class="nav-links">
+    <li><a href="#" class="active">Accueil</a></li>
+    <li><a href="#">Activités</a></li>
+    <li><a href="#">Générateur de Fiches</a></li>
+    <li><a href="#">Ressources</a></li>
+    <li><a href="#">À propos</a></li>
+    <li><a href="#">Contact</a></li>
+  </ul>
+
+  <div class="nav-right">
+    <button class="user-avatar" id="userAvatarBtn" aria-label="Profil utilisateur">
+      <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=teacher42&backgroundColor=ffdfbf" alt="Avatar enseignant" />
+    </button>
+
+    <div class="user-dropdown" id="userDropdown">
+      <div class="dropdown-header">
+        <div class="dropdown-avatar">
+          <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=teacher42&backgroundColor=ffdfbf" alt="Avatar" />
+        </div>
+        <div class="dropdown-info">
+          <p>{{user.username}}</p>
+          <span>{{user.email}}</span>
+        </div>
+      </div>
+
+      <div class="dropdown-buttons">
+        <button class="dropdown-btn">
+          <span class="btn-icon">👤</span> Mon Profil
+        </button>
+        <button class="dropdown-btn">
+          <span class="btn-icon">⚙️</span> Paramètres
+        </button>
+        <button class="dropdown-btn logout" onclick="logoutUser()">
+          <span class="btn-icon">🚪</span> Se déconnecter
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════════ HERO ══════════════ -->
+<section class="hero">
+  <div class="hero-badge">
+    ✨ Intelligence Artificielle pour l'enseignement primaire
+  </div>
+
+  <h1>
+    L'apprentissage,<br>
+    c'est une <span class="highlight">aventure</span> !
+  </h1>
+
+  <p>
+    Génère en quelques secondes des fiches d'exercices ludiques, illustrées et adaptées à chaque âge.
+    Fais découvrir la logique et la pensée algorithmique à tes élèves… sans écran complexe !
+  </p>
+
+  <div class="hero-btns">
+    <a href="/play" class="btn-primary">🚀 Créer une activité</a>
+    <a href="#how" class="btn-secondary">🎬 Voir comment ça marche</a>
+  </div>
+
+  <!-- Mascots row with real images -->
+  <div class="mascots-row">
+    <div class="mascot-card">
+      <div class="mascot-img-wrap">
+        <img
+          src="../static/images/marvel/iron_man.webp"
+          alt="Iron Man"
+          onerror="this.src='https://via.placeholder.com/110x110/FF6B6B/fff?text=🦸'" />
+      </div>
+      <span class="mascot-label">Iron Man</span>
+    </div>
+    <div class="mascot-card">
+      <div class="mascot-img-wrap">
+        <img
+          src="../static/images/marvel/spider_man.png"
+          alt="Spider-Man"
+          onerror="this.src='https://via.placeholder.com/110x110/4ECDC4/fff?text=🕷️'" />
+      </div>
+      <span class="mascot-label">Spider-Man</span>
+    </div>
+    <div class="mascot-card" style="transform: scale(1.15);">
+      <div class="mascot-img-wrap" style="border-color: var(--primary); width:120px;height:120px;">
+        <img
+          src="../static/images/marvel/captain_america.webp"
+          alt="Captain America"
+          onerror="this.src='https://via.placeholder.com/120x120/A78BFA/fff?text=🛡️'" />
+      </div>
+      <span class="mascot-label" style="font-size:0.9rem;color:var(--primary);">⭐ Héros de l'apprentissage</span>
+    </div>
+    <div class="mascot-card">
+      <div class="mascot-img-wrap">
+        <img
+          src="../static/images/marvel/moana.avif"
+          alt="Moana"
+          onerror="this.src='https://via.placeholder.com/110x110/FFE66D/333?text=🌺'" />
+      </div>
+      <span class="mascot-label">Moana</span>
+    </div>
+    <div class="mascot-card">
+      <div class="mascot-img-wrap">
+        <img
+          src="../static/images/marvel/gru.avif"
+          alt="Gru"
+          onerror="this.src='https://via.placeholder.com/110x110/6EE7B7/333?text=🎩'" />
+      </div>
+      <span class="mascot-label">Gru</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ STATS ══════════════ -->
+<div class="stats-strip">
+  <div class="stat-item">
+    <div class="stat-num">200+</div>
+    <div class="stat-lbl">Activités disponibles</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">6</div>
+    <div class="stat-lbl">Types d'exercices</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">1 200+</div>
+    <div class="stat-lbl">Enseignants actifs</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">4 800+</div>
+    <div class="stat-lbl">Fiches générées</div>
+  </div>
+</div>
+
+<!-- ══════════════ OBJECTIVES ══════════════ -->
+<section class="section objectives" id="objectives">
+  <div style="max-width:1200px; margin:0 auto; text-align:center;">
+    <span class="section-tag">🎯 Nos objectifs</span>
+    <h2 class="section-title">Pourquoi EduMagie ?</h2>
+    <p class="section-subtitle" style="margin:0 auto;">
+      Nous aidons les enseignants à créer des expériences d'apprentissage inoubliables pour les élèves de primaire.
+    </p>
+  </div>
+
+  <div class="objectives-grid">
+    <div class="obj-card red">
+      <span class="obj-icon">🧩</span>
+      <h3>Pensée algorithmique</h3>
+      <p>Initier les élèves à la logique et aux algorithmes à travers des jeux et des puzzles adaptés à leur âge, sans code complexe.</p>
+    </div>
+    <div class="obj-card teal">
+      <span class="obj-icon">🎨</span>
+      <h3>Activités illustrées</h3>
+      <p>Générer automatiquement des fiches illustrées et colorées avec des images adaptées aux enfants pour capter leur attention.</p>
+    </div>
+    <div class="obj-card yellow">
+      <span class="obj-icon">⏱️</span>
+      <h3>Gain de temps</h3>
+      <p>Créez en quelques secondes des exercices personnalisés sans passer des heures à préparer du matériel pédagogique.</p>
+    </div>
+    <div class="obj-card purple">
+      <span class="obj-icon">🌱</span>
+      <h3>Adapté à chaque âge</h3>
+      <p>Les activités s'ajustent automatiquement au niveau des élèves, du CP au CM2, pour une progression douce et efficace.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ ACTIVITIES ══════════════ -->
+<section class="section activities" id="activities">
+  <div class="activities-header">
+    <span class="section-tag pink">🎭 Nos activités</span>
+    <h2 class="section-title">Les activités Bebras & plus</h2>
+    <p class="section-subtitle">
+      Des exercices inspirés du défi Bebras pour développer la pensée computationnelle de manière ludique et engageante.
+    </p>
+  </div>
+
+  <div class="activities-grid">
+    <!-- Activity 1 -->
+    <div class="act-card">
+      <div class="act-img-wrap">
+        <img
+          src="../static/images/activities/instruction.png"
+          alt="Séquences et instructions"
+          onerror="this.src='https://via.placeholder.com/600x200/FF6B6B/fff?text=🔢+Séquences'" />
+        <span class="act-badge seq">Séquences</span>
+      </div>
+      <div class="act-body">
+        <h3>🔢 Séquences & Instructions</h3>
+        <p>Les élèves suivent des suites d'instructions pour faire avancer un personnage dans un labyrinthe. Initiation parfaite aux algorithmes.</p>
+        <div class="act-meta">
+          <span>🎓 CP – CM2</span>
+          <span>⏱️ 20 min</span>
+          <span>👥 Individuel</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Activity 2 -->
+    <div class="act-card">
+      <div class="act-img-wrap">
+        <img
+          src="../static/images/activities/find_error.webp"
+          alt="Débogage et erreurs"
+          onerror="this.src='https://via.placeholder.com/600x200/4ECDC4/fff?text=🐛+Débogage'" />
+        <span class="act-badge algo">Algorithmes</span>
+      </div>
+      <div class="act-body">
+        <h3>🐛 Trouver l'erreur (Débogage)</h3>
+        <p>Trouve l'erreur dans une suite d'instructions incorrectes ! Un exercice de logique amusant pour affûter l'esprit critique des élèves.</p>
+        <div class="act-meta">
+          <span>🎓 CE1 – CM2</span>
+          <span>⏱️ 25 min</span>
+          <span>👥 Binôme</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Activity 3 -->
+    <div class="act-card">
+      <div class="act-img-wrap">
+        <img
+          src="../static/images/activities/tri.png"
+          alt="Tri et classement"
+          onerror="this.src='https://via.placeholder.com/600x200/A78BFA/fff?text=🔀+Tri'" />
+        <span class="act-badge logic">Logique</span>
+      </div>
+      <div class="act-body">
+        <h3>🔀 Tri & Classement</h3>
+        <p>Trier des objets selon des règles données : taille, couleur, forme. Introduction douce aux algorithmes de tri pour les plus jeunes.</p>
+        <div class="act-meta">
+          <span>🎓 CP – CE2</span>
+          <span>⏱️ 15 min</span>
+          <span>👥 Groupe</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Activity 4 -->
+    <div class="act-card">
+      <div class="act-img-wrap">
+        <img
+          src="../static/images/activities/solution_problem.jpg"
+          alt="Résolution de problèmes"
+          onerror="this.src='https://via.placeholder.com/600x200/F59E0B/fff?text=💡+Problèmes'" />
+        <span class="act-badge problem">Résolution</span>
+      </div>
+      <div class="act-body">
+        <h3>💡 Résolution de Problèmes</h3>
+        <p>Des énigmes et défis à résoudre en équipe. Les élèves apprennent à décomposer un problème complexe en petites étapes simples.</p>
+        <div class="act-meta">
+          <span>🎓 CE2 – CM2</span>
+          <span>⏱️ 30 min</span>
+          <span>👥 Équipe</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Activity 5 -->
+    <div class="act-card">
+      <div class="act-img-wrap">
+        <img
+          src="../static/images/activities/reconnaissance.png"
+          alt="Reconnaissance de motifs"
+          onerror="this.src='https://via.placeholder.com/600x200/10B981/fff?text=🔍+Motifs'" />
+        <span class="act-badge pattern">Motifs</span>
+      </div>
+      <div class="act-body">
+        <h3>🔍 Reconnaissance de Motifs</h3>
+        <p>Compléter des suites logiques, trouver la règle qui se cache dans une séquence. Développe la pensée mathématique et analytique.</p>
+        <div class="act-meta">
+          <span>🎓 CP – CM1</span>
+          <span>⏱️ 20 min</span>
+          <span>👥 Individuel</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Activity 6 -->
+    <div class="act-card">
+      <div class="act-img-wrap">
+        <img
+          src="../static/images/activities/histoire.png"
+          alt="Créativité et storytelling"
+          onerror="this.src='https://via.placeholder.com/600x200/EC4899/fff?text=🎭+Créativité'" />
+        <span class="act-badge creative">Créativité</span>
+      </div>
+      <div class="act-body">
+        <h3>🎭 Histoire & Algorithmes</h3>
+        <p>Créer une histoire en suivant des règles logiques. Le personnage fait des choix selon des conditions : si/sinon, boucles narratives !</p>
+        <div class="act-meta">
+          <span>🎓 CE1 – CM2</span>
+          <span>⏱️ 35 min</span>
+          <span>👥 Classe</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ HOW IT WORKS ══════════════ -->
+<section class="section how-section" id="how">
+  <div style="max-width:1200px; margin:0 auto; text-align:center;">
+    <span class="section-tag blue">⚙️ Fonctionnement</span>
+    <h2 class="section-title">Comment ça marche ?</h2>
+    <p class="section-subtitle" style="margin:0 auto;">
+      En 4 étapes simples, crée une fiche d'exercice illustrée et prête à distribuer à tes élèves.
+    </p>
+  </div>
+
+  <div class="steps-grid">
+    <div class="step-card">
+      <div class="step-num s1">1</div>
+      <h3>Choisis l'activité</h3>
+      <p>Sélectionne le type d'exercice (séquences, logique, tri…) et le niveau de ta classe.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num s2">2</div>
+      <h3>Personnalise</h3>
+      <p>Choisis le thème, les personnages préférés des enfants et ajuste la difficulté.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num s3">3</div>
+      <h3>L'IA génère</h3>
+      <p>Notre assistant intelligent crée automatiquement la fiche avec texte et illustrations.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num s4">4</div>
+      <h3>Télécharge & Imprime</h3>
+      <p>Exporte la fiche en PDF illustré, prête à être imprimée et distribuée en classe.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ CHARACTERS STRIP ══════════════ -->
+<section class="chars-strip">
+  <span class="section-tag" style="background:#fff; color:#7C3AED; border-color:#DDD6FE;">🦸 Nos héros pédagogiques</span>
+  <h2 class="section-title" style="margin:0.5rem 0;">Les personnages qui motivent !</h2>
+  <p style="color:var(--text-light); font-size:1rem; margin-bottom:1rem;">Intègre tes personnages préférés dans chaque exercice pour rendre l'apprentissage irrésistible</p>
+
+  <div class="chars-grid">
+    <div class="char-item">
+      <div class="char-circle">
+        <img src="../static/images/marvel/wonder_woman.webp"
+             alt="Wonder Woman"
+             onerror="this.src='https://via.placeholder.com/90/A78BFA/fff?text=🦸‍♀️'" />
+      </div>
+      <span class="char-name">Wonder Woman</span>
+    </div>
+    <div class="char-item">
+      <div class="char-circle">
+        <img src="../static/images/marvel/black_panther.webp"
+             alt="Black Panther"
+             onerror="this.src='https://via.placeholder.com/90/60A5FA/fff?text=🐾'" />
+      </div>
+      <span class="char-name">Black Panther</span>
+    </div>
+    <div class="char-item">
+      <div class="char-circle">
+        <img src="../static/images/marvel/pikachu.webp"
+             alt="Pikachu"
+             onerror="this.src='https://via.placeholder.com/90/FFE66D/333?text=⚡'" />
+      </div>
+      <span class="char-name">Pikachu</span>
+    </div>
+    <div class="char-item">
+      <div class="char-circle">
+        <img src="../static/images/marvel/deku.jpg"
+             alt="Deku"
+             onerror="this.src='https://via.placeholder.com/90/6EE7B7/333?text=💚'" />
+      </div>
+      <span class="char-name">Deku</span>
+    </div>
+    <div class="char-item">
+      <div class="char-circle">
+        <img src="../static/images/marvel/simba.png"
+             alt="Simba"
+             onerror="this.src='https://via.placeholder.com/90/FDBA74/fff?text=🦁'" />
+      </div>
+      <span class="char-name">Simba</span>
+    </div>
+    <div class="char-item">
+      <div class="char-circle">
+        <img src="../static/images/marvel/elsa.jpg"
+             alt="Elsa"
+             onerror="this.src='https://via.placeholder.com/90/93C5FD/fff?text=❄️'" />
+      </div>
+      <span class="char-name">Elsa</span>
+    </div>
+    <div class="char-item">
+      <div class="char-circle">
+        <img src="../static/images/marvel/buzz_lightyear.webp"
+             alt="Buzz Lightyear"
+             onerror="this.src='https://via.placeholder.com/90/818CF8/fff?text=🚀'" />
+      </div>
+      <span class="char-name">Buzz l'Éclair</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ CTA ══════════════ -->
+<section class="cta-section">
+  <h2>Prêt à transformer ta classe ?</h2>
+  <p>Rejoins des milliers d'enseignants qui utilisent EduMagie pour rendre chaque leçon mémorable et inspirante.</p>
+  <a href="/play" class="btn-white">🎉 Commencer maintenant</a>
+</section>
+
+<!-- ══════════════ FOOTER ══════════════ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="logo-text">🌟 EduMagie</div>
+      <p>Assistant d'aide à l'enseignement primaire pour l'éveil à la pensée informatique. Créez des activités ludiques et adaptées en quelques secondes.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Activités</h4>
+      <ul>
+        <li><a href="#">Séquences</a></li>
+        <li><a href="#">Logique</a></li>
+        <li><a href="#">Débogage</a></li>
+        <li><a href="#">Motifs</a></li>
+        <li><a href="#">Tri & Classement</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Ressources</h4>
+      <ul>
+        <li><a href="#">Guide enseignant</a></li>
+        <li><a href="#">Défi Bebras</a></li>
+        <li><a href="#">Blog pédagogique</a></li>
+        <li><a href="#">Tutoriels vidéo</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Support</h4>
+      <ul>
+        <li><a href="#">FAQ</a></li>
+        <li><a href="#">Nous contacter</a></li>
+        <li><a href="#">Politique de confidentialité</a></li>
+        <li><a href="#">Mentions légales</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 EduMagie – Tous droits réservés 🎓</span>
+  </div>
+</footer>
+
+<script>
+  const avatarBtn  = document.getElementById('userAvatarBtn');
+  const dropdown   = document.getElementById('userDropdown');
+
+  avatarBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    dropdown.classList.toggle('open');
+  });
+
+  document.addEventListener('click', () => dropdown.classList.remove('open'));
+  dropdown.addEventListener('click', (e) => e.stopPropagation());
+
+function logoutUser() {
+    window.location.href = "/logout";
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.act-card, .obj-card, .step-card').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(24px)';
+    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    observer.observe(el);
+  });
+</script>
+</body>
+</html>
